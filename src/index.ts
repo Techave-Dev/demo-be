@@ -1,13 +1,15 @@
-import { serve } from "@hono/node-server";
-import { Hono } from "hono";
+import Express from "express";
+import cors from "cors";
+import multer from "multer";
+const app = Express();
+const upload = multer({ dest: "./files/" });
 
-const app = new Hono();
-
-app.get("/", (c) => {
-  return c.text("Hello Hono!");
+app.use(cors());
+app.get("/", (req, res) => {
+  return res.send("Hello Hono!");
 });
 
-app.get("/timeout", async (c) => {
+app.get("/timeout", async (req, res) => {
   const from = new Date().toLocaleString("id-ID", { timeZone: "Asia/Jakarta" });
   await new Promise<void>((resolve, reject) => {
     setTimeout(() => {
@@ -16,13 +18,16 @@ app.get("/timeout", async (c) => {
   });
   const to = new Date().toLocaleString("id-ID", { timeZone: "Asia/Jakarta" });
 
-  return c.json({ from, to });
+  return res.json({ from, to });
+});
+
+app.get("/upload", upload.any(), async (req, res) => {
+  console.log(req.files);
+
+  return res.json({});
 });
 
 const port = 3000;
-console.log(`Server is running on port ${port}`);
-
-serve({
-  fetch: app.fetch,
-  port,
+app.listen(port, () => {
+  console.log(`Server is running on port ${port}`);
 });
