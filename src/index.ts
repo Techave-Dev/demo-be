@@ -22,9 +22,9 @@ app.get("/timeout", async (req, res) => {
 });
 
 app.get("/upload", upload.any(), async (req, res) => {
-  console.log(req.files);
-
-  return res.json({});
+  return res.json({
+    files: Array.isArray(req.files) ? req.files.map((x) => x.originalname) : [],
+  });
 });
 
 const port = 3000;
